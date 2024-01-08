@@ -30,9 +30,6 @@ td {
     height: 160px; /* Vergrößerte Höhe der Zellen */
     border: 5px solid white;
     text-align: center;
-    vertical-align: middle;
-    font-size: 48px; /* Vergrößerte Schriftgröße */
-    background-color: transparent;
 }
 
 td:hover {

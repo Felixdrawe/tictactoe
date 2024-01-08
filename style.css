@@ -1,0 +1,40 @@
+body {
+    background-color: #323232;
+    font-family: 'Open Sans', sans-serif;
+    color: white; /* Für bessere Lesbarkeit auf dunklem Hintergrund */
+    margin: 0;
+}
+
+
+h1 {
+    text-align: center;
+    font-size: 48px;
+    margin: 0;
+    padding: 20px 0;
+}
+#content {
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Zentriert das Spiel vertikal */
+   margin-top: 200px;
+}
+
+table {
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 0 auto; /* Zentriert das Spiel horizontal */
+}
+
+td {
+    width: 160px; /* Vergrößerte Breite der Zellen */
+    height: 160px; /* Vergrößerte Höhe der Zellen */
+    border: 5px solid white;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 48px; /* Vergrößerte Schriftgröße */
+    background-color: transparent;
+}
+
+td:hover {
+    background-color: #a0a0a0; /* Dunklere Farbe für den Hover-Effekt */
+}

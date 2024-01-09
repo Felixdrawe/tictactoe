@@ -1,37 +1,77 @@
 body {
-    background-color: #323232;
-    font-family: 'Open Sans', sans-serif;
-    color: white; /* Für bessere Lesbarkeit auf dunklem Hintergrund */
-    margin: 0;
+  background-color: #323232;
+  font-family: 'Open Sans', sans-serif;
+  color: white; /* Für bessere Lesbarkeit auf dunklem Hintergrund */
+  margin: 0;
 }
-
 
 h1 {
-    text-align: center;
-    font-size: 48px;
-    margin: 0;
-    padding: 20px 0;
+  text-align: center;
+  font-size: 48px;
+  margin: 0;
+  padding: 20px 0;
 }
 #content {
-    display: flex;
-    justify-content: center;
-    align-items: center; /* Zentriert das Spiel vertikal */
-   margin-top: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Zentriert das Spiel vertikal */
+  margin-top: 200px;
+  position: relative;
 }
 
 table {
-    border-collapse: separate;
-    border-spacing: 0;
-    margin: 0 auto; /* Zentriert das Spiel horizontal */
+  border-collapse: collapse; /* Ändern auf 'collapse', um die Grenzen zu vereinen */
+  margin: 0 auto; /* Zentriert das Spiel horizontal */
 }
 
 td {
-    width: 160px; /* Vergrößerte Breite der Zellen */
-    height: 160px; /* Vergrößerte Höhe der Zellen */
-    border: 5px solid white;
-    text-align: center;
+  width: 160px; /* Vergrößerte Breite der Zellen */
+  height: 160px; /* Vergrößerte Höhe der Zellen */
+  border: 8px solid white;
+  text-align: center;
+  cursor: pointer; /* Zeigt an, dass die Zellen anklickbar sind */
+}
+
+/* Entfernt den äußeren Rahmen der Tabelle */
+table tr:first-child td {
+  border-top: none;
+}
+
+table tr td:first-child {
+  border-left: none;
+}
+
+table tr:last-child td {
+  border-bottom: none;
+}
+
+table tr td:last-child {
+  border-right: none;
 }
 
 td:hover {
-    background-color: #a0a0a0;
+  background-color: rgba(255, 255, 255, 0.1); /* Transparenz für Hover-Effekt */
+}
+
+#playerTurn,
+#winner {
+  text-align: center;
+  font-size: 24px;
+  margin: 10px 0;
+}
+
+button {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: rgba(255, 255, 255, 0.5); /* Transparenz für Hover-Effekt */
+}
+
+#winner {
+  height: 50px;
 }

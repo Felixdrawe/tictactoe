@@ -1,62 +1,162 @@
-let fields = [
-  null,
-  'circle',
-  'cross',
-  'cross',
-  null,
-  'circle',
-  'circle',
-  'cross',
-  null,
-];
+let fields = [null, null, null, null, null, null, null, null, null];
+
+let gameActive = true; // Neue Variable, um den Spielstatus zu verfolgen
 
 function init() {
+  gameActive = true; // Spiel ist aktiv, wenn init aufgerufen wird
   render();
 }
 
 function render() {
-  // Findet das Element mit der ID 'content' und speichert es in contentDiv
   const contentDiv = document.getElementById('content');
+  let tableHtml = '<table>';
 
-  // Beginnt mit der Erstellung der HTML-Struktur für die Tabelle
-  let tableHtml = '<table>'; // tableHtml = "<table>"
-
-  // Äußere Schleife, die jede Zeile der Tabelle durchläuft
   for (let i = 0; i < 3; i++) {
-    tableHtml += '<tr>'; // Fügt eine Tabellenzeile hinzu
-
-    // Innere Schleife, die jede Zelle in einer Zeile durchläuft
+    tableHtml += '<tr>';
     for (let j = 0; j < 3; j++) {
-      const index = i * 3 + j; // Berechnet den Index im fields-Array
-      let symbol = ''; // Initialisiert das Symbol als leeren String
-
-      // Überprüft den Wert im fields-Array und setzt das Symbol entsprechend
-      if (fields[index] === 'circle') {
-        symbol = createAnimatedCircle(); // Setzt das Symbol auf einen Kreis, wenn der Wert 'circle' ist
-      } else if (fields[index] === 'cross') {
-        symbol = createAnimatedCross(); // Setzt das Symbol auf 'x', wenn der Wert 'cross' ist
-      }
-
-      // Fügt die Zelle mit dem entsprechenden Symbol zur Tabelle hinzu
-      tableHtml += `<td>${symbol}</td>`; // Fügt eine Tabellenzelle mit dem Symbol hinzu
+      const index = i * 3 + j;
+      let symbol =
+        fields[index] === 'circle'
+          ? createAnimatedCircle()
+          : fields[index] === 'cross'
+          ? createAnimatedCross()
+          : '';
+      tableHtml += `<td onclick="handleClick(${index}, this)">${symbol}</td>`;
     }
-
-    // Schließt die Tabellenzeile
-    tableHtml += '</tr>'; // Fügt das schließende Tag für die Zeile hinzu
+    tableHtml += '</tr>';
   }
 
-  // Schließt die Tabelle
-  tableHtml += '</table>'; // Fügt das schließende Tag für die Tabelle hinzu
+  tableHtml += '</table>';
+  contentDiv.innerHTML = tableHtml;
+}
 
-  // Setzt die erstellte HTML-Struktur als Inhalt von contentDiv
-  contentDiv.innerHTML = tableHtml; // Setzt tableHtml als innerHTML von contentDiv
+function handleClick(index, tdElement) {
+  if (fields[index] === null && gameActive) {
+    fields[index] =
+      fields.filter((x) => x).length % 2 === 0 ? 'circle' : 'cross';
+    tdElement.innerHTML =
+      fields[index] === 'circle'
+        ? createAnimatedCircle()
+        : createAnimatedCross();
+    tdElement.removeAttribute('onclick'); // Entfernt die onclick-Funktion
+    if (checkWinner(fields[index])) {
+      document.getElementById('winner').innerText = `${capitalizeFirstLetter(
+        fields[index]
+      )} hat gewonnen!`;
+      gameActive = false; // Spiel beenden
+    } else if (fields.every((field) => field !== null)) {
+      document.getElementById('winner').innerText = 'Unentschieden!';
+      gameActive = false; // Spiel beenden
+    }
+  } else if (fields.every((field) => field !== null)) {
+    document.getElementById('winner').innerText = 'Unentschieden!';
+    gameActive = false; // Spiel beenden
+  }
+}
+
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+}
+
+function checkWinner(player) {
+  const winConditions = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8], // Zeilen
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8], // Spalten
+    [0, 4, 8],
+    [2, 4, 6], // Diagonalen
+  ];
+
+  for (let condition of winConditions) {
+    if (condition.every((index) => fields[index] === player)) {
+      drawWinningLine(condition);
+      return true;
+    }
+  }
+  return false;
+}
+
+function drawWinningLine(winCondition) {
+  // Remove existing line if present
+  const existingLine = document.getElementById('winning-line');
+  if (existingLine) {
+    existingLine.remove();
+  }
+
+  // Identify the start and end points for the winning line
+  const startCell = document.querySelector(
+    `table tr:nth-child(${Math.floor(winCondition[0] / 3) + 1}) td:nth-child(${
+      (winCondition[0] % 3) + 1
+    })`
+  );
+  const endCell = document.querySelector(
+    `table tr:nth-child(${Math.floor(winCondition[2] / 3) + 1}) td:nth-child(${
+      (winCondition[2] % 3) + 1
+    })`
+  );
+
+  // Get positions of the start and end cells
+  const startRect = startCell.getBoundingClientRect();
+  const endRect = endCell.getBoundingClientRect();
+  const gameBoard = document.querySelector('#content');
+  const boardRect = gameBoard.getBoundingClientRect();
+
+  // Create SVG line element
+  const svgLine = document.createElementNS(
+    'http://www.w3.org/2000/svg',
+    'line'
+  );
+  svgLine.setAttribute(
+    'x1',
+    startRect.left + startRect.width / 2 - boardRect.left
+  );
+  svgLine.setAttribute(
+    'y1',
+    startRect.top + startRect.height / 2 - boardRect.top
+  );
+  svgLine.setAttribute('x2', endRect.left + endRect.width / 2 - boardRect.left);
+  svgLine.setAttribute('y2', endRect.top + endRect.height / 2 - boardRect.top);
+  svgLine.style.stroke = 'white'; // Line color
+  svgLine.style.strokeWidth = '8'; // Line width
+
+  // Add SVG to the document
+  const svgElement = document.createElementNS(
+    'http://www.w3.org/2000/svg',
+    'svg'
+  );
+  svgElement.id = 'winning-line'; // Assign an ID to the SVG element
+  svgElement.style.position = 'absolute';
+  svgElement.style.top = `${boardRect.top}px`;
+  svgElement.style.left = `${boardRect.left}px`;
+  svgElement.style.width = `${boardRect.width}px`;
+  svgElement.style.height = `${boardRect.height}px`;
+  svgElement.style.pointerEvents = 'none'; // Allows clicking through the SVG
+  svgElement.appendChild(svgLine);
+
+  document.body.appendChild(svgElement);
+}
+
+function resetGame() {
+  fields = Array(9).fill(null);
+  gameActive = true;
+  document.getElementById('winner').innerText = '';
+  render();
+
+  // Remove the SVG line if it exists
+  const winningLine = document.getElementById('winning-line');
+  if (winningLine) {
+    winningLine.remove();
+  }
 }
 
 function createAnimatedCircle() {
-    // Berechnet den Umfang des Kreises
-    const circumference = 2 * Math.PI * 30; // 2 * π * Radius
-  
-    return `
+  // Berechnet den Umfang des Kreises
+  const circumference = 2 * Math.PI * 30; // 2 * π * Radius
+
+  return `
       <svg width="70" height="70" viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg">
         <circle cx="35" cy="35" r="30" stroke="#00B0EF" stroke-width="10"
           stroke-dasharray="${circumference}"
@@ -67,13 +167,12 @@ function createAnimatedCircle() {
         </circle>
       </svg>
     `;
-  }
+}
 
+function createAnimatedCross() {
+  const lineLength = Math.sqrt(50 * 50 + 50 * 50); // Länge einer Linie des Kreuzes
 
-  function createAnimatedCross() {
-    const lineLength = Math.sqrt(50 * 50 + 50 * 50); // Länge einer Linie des Kreuzes
-  
-    return `
+  return `
       <svg width="70" height="70" viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg">
         <line x1="35" y1="35" x2="60" y2="60" stroke="#FFC000" stroke-width="10" stroke-linecap="round">
           <animate attributeName="stroke-dasharray" from="0, ${lineLength}" to="${lineLength}, 0" dur="1s" fill="freeze"/>
@@ -89,9 +188,4 @@ function createAnimatedCircle() {
         </line>
       </svg>
     `;
-  }
-  
-  
-  
-  
-  
+}
